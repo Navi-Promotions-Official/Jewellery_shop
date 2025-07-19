@@ -41,7 +41,10 @@
     <div class="overlay position-relative d-flex flex-column justify-content-center align-items-center text-white text-shadow py-5" style="min-height: 100vh;">
         <h1 class="display-4 fw-bold text-warning">Shine Bright with Every Sparkle</h1>
         <p class="lead mb-4 fw-bold">Explore our premium collection of handcrafted gold and silver jewellery. Beauty meets elegance here.</p>
-        <a href="#" id="dashboardBtn" class="btn btn-warning btn-lg text-white">Go to Dashboard</a>
+        <div class="d-flex gap-3">
+          <a href="#" id="customerBtn" class="btn btn-warning btn-lg text-white">Customer Details</a>
+          <a href="#" id="invoiceBtn" class="btn btn-secondary btn-lg text-white">Invoice Details</a>
+        </div>
     </div>
     </section>
 
@@ -232,21 +235,31 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const dashboardBtn = document.getElementById("dashboardBtn");
+  const customerBtn = document.getElementById("customerBtn");
+  const invoiceBtn = document.getElementById("invoiceBtn");
 
-  if (dashboardBtn) {
-    dashboardBtn.addEventListener("click", function (e) {
-      e.preventDefault(); 
+  function checkLoginAndRedirect(targetUrl) {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (isLoggedIn) {
+      window.location.href = targetUrl;
+    } else {
+      const loginModal = new bootstrap.Modal(document.getElementById('authModal'));
+      loginModal.show();
+    }
+  }
 
-      if (isLoggedIn) {
-        window.location.href = "/dashboard";
-      } else {
-        // Show login modal
-        const loginModal = new bootstrap.Modal(document.getElementById('authModal'));
-        loginModal.show();
-      }
+  if (customerBtn) {
+    customerBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      checkLoginAndRedirect("/customerdetails");
+    });
+  }
+
+  if (invoiceBtn) {
+    invoiceBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      checkLoginAndRedirect("/invoicehistory");
     });
   }
 });

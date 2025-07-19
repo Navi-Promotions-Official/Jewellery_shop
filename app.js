@@ -50,5 +50,13 @@ app.get('/dashboard', (req, res) => {
   res.render('dashboard');
 });
 
+app.get('/customerdetails', (req, res) => {
+  res.render('customerdetails'); // Make sure customerdetails.ejs exists
+});
+
+app.get('/invoicehistory', (req, res) => {
+  res.render('invoicehistory'); // Make sure invoicehistory.ejs exists
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
