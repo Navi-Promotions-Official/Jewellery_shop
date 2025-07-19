@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jewellery Shop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .hero {
+      background: url('https://images.unsplash.com/photo-1590080874942-9a21bd79a7d4?auto=format&fit=crop&w=1400&q=80') no-repeat center center;
+      background-size: cover;
+      height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 2rem;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-warning" href="#">Jewellery Shop</a>
+      <div class="collapse navbar-collapse justify-content-end">
+        <button class="btn btn-warning text-white" data-bs-toggle="modal" data-bs-target="#authModal">Login / Signup</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero text-center text-dark pt-5 mt-5">
+    <div class="overlay col-md-8">
+      <h1 class="display-4 fw-bold">Shine Bright with Every Sparkle</h1>
+      <p class="lead mb-4">Explore our premium collection of handcrafted gold and silver jewellery. Beauty meets elegance here.</p>
+      <a href="#" class="btn btn-warning btn-lg text-white">Shop Now</a>
+    </div>
+  </section>
+
+  <!-- Auth Modal -->
+  <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content p-4">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="authModalLabel">Welcome</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          
+          <!-- Login Form -->
+          <form id="loginForm">
+            <div class="mb-3">
+              <label class="form-label">Username</label>
+              <input type="text" id="loginUsername" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" id="loginPassword" class="form-control" required />
+            </div>
+            <div id="loginError" class="text-danger d-none">Invalid credentials!</div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-warning text-white">Login</button>
+            </div>
+            <p class="text-center mt-3">
+              Don't have an account? <a href="#" id="toggleToSignup">Sign up</a>
+            </p>
+          </form>
+
+          <!-- Signup Form -->
+          <form id="signupForm" class="d-none">
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-control" required />
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-warning text-white">Signup</button>
+            </div>
+            <p class="text-center mt-3">
+              Already have an account? <a href="#" id="toggleToLogin">Login</a>
+            </p>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Section -->
+  <div id="dashboardPage" class="container my-5 d-none">
+    <h2 class="text-center mb-4 fw-bold">Today’s Metal Prices</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-5 mb-4">
+        <div class="card text-center shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold">Gold Rate</h5>
+            <p class="display-6 text-warning fw-bold">₹6,200 / gram</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-5 mb-4">
+        <div class="card text-center shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold">Silver Rate</h5>
+            <p class="display-6 text-secondary fw-bold">₹75 / gram</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap & JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const loginError = document.getElementById("loginError");
+    const dashboardPage = document.getElementById("dashboardPage");
+    const authModal = new bootstrap.Modal(document.getElementById("authModal"));
+
+    // Toggle to Signup
+    document.getElementById("toggleToSignup").addEventListener("click", (e) => {
+      e.preventDefault();
+      loginForm.classList.add("d-none");
+      signupForm.classList.remove("d-none");
+    });
+
+    // Toggle to Login
+    document.getElementById("toggleToLogin").addEventListener("click", (e) => {
+      e.preventDefault();
+      signupForm.classList.add("d-none");
+      loginForm.classList.remove("d-none");
+    });
+
+    // Dummy login
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const username = document.getElementById("loginUsername").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      if (username === "admin" && password === "1234") {
+        authModal.hide();
+        dashboardPage.classList.remove("d-none");
+        window.scrollTo({ top: dashboardPage.offsetTop, behavior: "smooth" });
+        loginError.classList.add("d-none");
+      } else {
+        loginError.classList.remove("d-none");
+      }
+    });
+
+    // Dummy signup
+    signupForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      alert("Signup successful! You can now login.");
+      signupForm.classList.add("d-none");
+      loginForm.classList.remove("d-none");
+    });
+  </script>
+</body>
+</html>
