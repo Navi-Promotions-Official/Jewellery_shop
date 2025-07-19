@@ -6,6 +6,10 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const goldEstimationRoutes = require('./routes/goldEstimation');
 const silverEstimationRoutes = require('./routes/silverEstimation');
+const customerRoutes = require('./routes/customer');
+const Customer = require('./models/Customer');
+const invoiceRoutes = require('./routes/invoice');
+const Invoice = require('./models/Invoice');
 
 
 dotenv.config();
@@ -31,7 +35,27 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api/auth", authRoutes);
 app.use('/goldEstimation', goldEstimationRoutes);
 app.use('/silverEstimation', silverEstimationRoutes);
+app.use('/api/customer', customerRoutes);
+app.use('/api/invoice', invoiceRoutes);
 
+
+app.get('/customerdetails', async (req, res) => {
+  try {
+    const customers = await Customer.find().sort({ createdAt: -1 });
+    res.render('customerdetails', { customers });
+  } catch (err) {
+    res.send('Error loading customer details');
+  }
+});
+
+app.get('/invoicehistory', async (req, res) => {
+  try {
+    const invoices = await Invoice.find().sort({ createdAt: -1 });
+    res.render('invoicehistory', { invoices });
+  } catch (err) {
+    res.send('Error loading invoice history');
+  }
+});
 
 // Route for home page
 app.get("/", (req, res) => {

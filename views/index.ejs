@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="public/style.css">
 </head>
 <body>
@@ -14,7 +15,7 @@
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
   <div class="container">
     <!-- Brand -->
-    <a class="navbar-brand fw-bold text-warning" href="#">Jewellery Shop</a>
+    <a class="navbar-brand fw-bold text-warning" href="#">Muthu Jewellery</a>
 
     <!-- Toggler Button for Mobile -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
@@ -33,20 +34,24 @@
 </nav>
 
   <!-- Hero Section -->
-    <section class="hero position-relative text-center text-dark">
+  <section class="hero position-relative text-center text-dark" style="min-height: 100vh; overflow: hidden;">
     <!-- Full-Screen Background Image -->
     <img src="/img/hero.jpg" class="hero-img position-absolute top-0 start-0 w-100 h-100 z-n1" alt="Jewellery Hero Image">
 
+    <!-- Overlay (dark transparency) -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-25 z-0"></div>
+
     <!-- Centered Overlay Content -->
-    <div class="overlay position-relative d-flex flex-column justify-content-center align-items-center text-white text-shadow py-5" style="min-height: 100vh;">
-        <h1 class="display-4 fw-bold text-warning">Shine Bright with Every Sparkle</h1>
-        <p class="lead mb-4 fw-bold">Explore our premium collection of handcrafted gold and silver jewellery. Beauty meets elegance here.</p>
-        <div class="d-flex gap-3">
-          <a href="#" id="customerBtn" class="btn btn-warning btn-lg text-white">Customer Details</a>
-          <a href="#" id="invoiceBtn" class="btn btn-secondary btn-lg text-white">Invoice Details</a>
-        </div>
+    <div class="overlay position-relative d-flex flex-column justify-content-center align-items-center text-white text-shadow py-5 z-1" style="min-height: 100vh;">
+      <h1 class="display-4 fw-bold text-warning">Shine Bright with Every Sparkle</h1>
+      <p class="lead mb-4 fw-bold">Explore our premium collection of handcrafted gold and silver jewellery. Beauty meets elegance here.</p>
+      <!-- Optional Buttons -->
+      <!-- <div class="d-flex gap-3">
+        <a href="#" id="customerBtn" class="btn btn-warning btn-lg text-white">Customer Details</a>
+        <a href="#" id="invoiceBtn" class="btn btn-secondary btn-lg text-white">Invoice Details</a>
+      </div> -->
     </div>
-    </section>
+  </section>
 
   <!-- Authentication Modal -->
   <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
@@ -101,29 +106,154 @@
   </div>
 
 <div id="dashboardPage" class="container my-5 d-none">
-  <h2 class="text-center mb-4 fw-bold">Today’s Metal Prices</h2>
+  <h2 class="text-center mb-4 fw-bold text-uppercase ">Dashboard</h2>
+
+  <!-- Metal Prices Section -->
   <div class="row justify-content-center">
     <div class="col-md-5 mb-4">
       <div class="card text-center shadow-sm">
         <div class="card-body">
-          <h5 class="card-title fw-semibold">Gold Rate</h5>
-          <p id="goldRate" class="display-6 text-warning fw-bold">Loading...</p>
-          <a href="/goldestimation" class="btn btn-warning mt-3">Estimate Gold</a>
+          <h5 class="card-title fw-semibold">Gold Estimation Slip</h5>
+          <!-- <p id="goldRate" class="display-6 text-warning fw-bold">Loading...</p> -->
+          <a href="/goldestimation" class="btn btn-warning mt-3">
+            <i class="bi bi-coin me-1"></i> Estimate Gold
+          </a>
+
         </div>
       </div>
     </div>
     <div class="col-md-5 mb-4">
       <div class="card text-center shadow-sm">
         <div class="card-body">
-          <h5 class="card-title fw-semibold">Silver Rate</h5>
-          <p id="silverRate" class="display-6 text-secondary fw-bold">Loading...</p>
-          <a href="/silverestimation" class="btn btn-secondary mt-3">Estimate Silver</a>
+          <h5 class="card-title fw-semibold">Silver Estimation Slip</h5>
+          <!-- <p id="silverRate" class="display-6 text-secondary fw-bold">Loading...</p> -->
+          <a href="/silverestimation" class="btn btn-secondary mt-3"><i class="bi bi-coin me-1"></i> Estimate Silver</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer & Invoice Section -->
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-5 mb-4">
+      <div class="card text-center shadow-sm">
+       <div class="card-body">
+        <h5 class="card-title fw-semibold">Customer Management</h5>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-center gap-3 mt-3">
+          <!-- Create Customer Button -->
+          <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#createCustomerModal">
+            <i class="bi bi-person-plus-fill me-1"></i> Create Customer
+          </button>
+
+          <!-- Customer Details Button -->
+          <a href="/customerdetails" class="btn btn-outline-info" id="customerBtn">
+            <i class="bi bi-people-fill me-1"></i>Customer Details
+          </a>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="col-md-5 mb-4">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title fw-semibold">Invoice Records</h5>
+          <div class="d-flex justify-content-center gap-3 mt-3">
+            <!-- Create Invoice Button -->
+            <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#createInvoiceModal">
+               <i class="bi bi-file-earmark-plus-fill me-1"></i>Create Invoice
+            </button>
+
+            <!-- View Invoices Button -->
+            <a href="/invoicehistory" class="btn btn-outline-info" id="invoiceBtn">
+              <i class="bi bi-receipt-cutoff me-1"></i> Invoice Details
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Create Customer Modal -->
+<div class="modal fade" id="createCustomerModal" tabindex="-1" aria-labelledby="createCustomerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="createCustomerModalLabel">Create Customer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="createCustomerForm">
+          <div class="mb-3">
+            <label for="customerName" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="customerName" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="customerPhone" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="customerPhone" name="phone" required>
+          </div>
+          <div class="mb-3">
+            <label for="customerEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="customerEmail" name="email" required>
+          </div>
+          <button type="submit" class="btn btn-success w-100">Save Customer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Create Invoice Modal -->
+<div class="modal fade" id="createInvoiceModal" tabindex="-1" aria-labelledby="createInvoiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="createInvoiceModalLabel">Create Invoice</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="createInvoiceForm">
+          <div class="mb-3">
+            <label class="form-label">Customer Name</label>
+            <input type="text" class="form-control" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <input type="text" class="form-control" name="phone" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Invoice ID</label>
+            <input type="text" class="form-control" name="invoiceId" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" name="date" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Due Amount (₹)</label>
+            <input type="number" class="form-control" name="amount" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status" required>
+              <option value="Pending">Pending</option>
+              <option value="Partially Paid">Partially Paid</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success w-100">Save Invoice</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -263,6 +393,70 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
+  document.getElementById('createCustomerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('customerName').value;
+    const phone = document.getElementById('customerPhone').value;
+    const email = document.getElementById('customerEmail').value;
+
+    fetch('/api/customer/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, email })
+    })
+
+    .then(res => res.json())
+    .then(data => {
+      alert("Customer created successfully!");
+      document.getElementById('createCustomerForm').reset();
+      const modal = bootstrap.Modal.getInstance(document.getElementById('createCustomerModal'));
+      modal.hide();
+    })
+    .catch(err => {
+      alert("Error creating customer");
+      console.error(err);
+    });
+  });
+
+
+    document.getElementById('createInvoiceForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const invoiceData = {
+      name: form.name.value,
+      phone: form.phone.value,
+      email: form.email.value,
+      invoiceId: form.invoiceId.value,
+      date: form.date.value,
+      amount: parseFloat(form.amount.value),
+      status: form.status.value
+    };
+
+    try {
+      const response = await fetch('/api/invoice/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(invoiceData)
+      });
+
+      if (response.ok) {
+        alert('Invoice created successfully!');
+        form.reset();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('createInvoiceModal'));
+        modal.hide();
+      } else {
+        alert('Failed to create invoice');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error saving invoice');
+    }
+  });
+
 
 
 </script>

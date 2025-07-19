@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice History</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body>
+
+<div class="container mt-5">
+  <h2 class="mb-4">Invoice History</h2>
+
+  <table class="table table-bordered table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Invoice ID</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Date</th>
+        <th>Amount (₹)</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% invoices.forEach((inv, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= inv.invoiceId %></td>
+          <td><%= inv.name %></td>
+          <td><%= inv.phone %></td>
+          <td><%= inv.email %></td>
+          <td><%= inv.date.toISOString().split('T')[0] %></td>
+          <td>₹<%= inv.amount.toFixed(2) %></td>
+          <td><%= inv.status %></td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="editInvoice('<%= inv._id %>', '<%= inv.invoiceId %>', '<%= inv.name %>', '<%= inv.phone %>', '<%= inv.email %>', '<%= inv.date.toISOString().split('T')[0] %>' , '<%= inv.amount %>', '<%= inv.status %>')"><i class="bi bi-pencil-fill"></i></button>
+            <button class="btn btn-sm btn-danger" onclick="deleteInvoice('<%= inv._id %>')"><i class="bi bi-trash-fill"></i></button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Update Modal -->
+<div class="modal fade" id="editInvoiceModal" tabindex="-1" aria-labelledby="editInvoiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="editInvoiceModalLabel">Update Invoice</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editInvoiceForm">
+          <input type="hidden" id="editInvoiceId">
+          <div class="mb-3">
+            <label class="form-label">Invoice ID</label>
+            <input type="text" id="editInvoiceNo" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" id="editName" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text" id="editPhone" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" id="editEmail" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" id="editDate" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Amount</label>
+            <input type="number" id="editAmount" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select id="editStatus" class="form-select" required>
+              <option value="Pending">Pending</option>
+              <option value="Partially Paid">Partially Paid</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Update Invoice</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function editInvoice(id, invoiceId, name, phone, email, date, amount, status) {
+    document.getElementById('editInvoiceId').value = id;
+    document.getElementById('editInvoiceNo').value = invoiceId;
+    document.getElementById('editName').value = name;
+    document.getElementById('editPhone').value = phone;
+    document.getElementById('editEmail').value = email;
+    document.getElementById('editDate').value = date;
+    document.getElementById('editAmount').value = amount;
+    document.getElementById('editStatus').value = status;
+
+    const modal = new bootstrap.Modal(document.getElementById('editInvoiceModal'));
+    modal.show();
+  }
+
+  document.getElementById('editInvoiceForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const id = document.getElementById('editInvoiceId').value;
+
+    const invoiceData = {
+      invoiceId: document.getElementById('editInvoiceNo').value,
+      name: document.getElementById('editName').value,
+      phone: document.getElementById('editPhone').value,
+      email: document.getElementById('editEmail').value,
+      date: document.getElementById('editDate').value,
+      amount: parseFloat(document.getElementById('editAmount').value),
+      status: document.getElementById('editStatus').value
+    };
+
+    const res = await fetch(`/api/invoice/update/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(invoiceData)
+    });
+
+    if (res.ok) {
+      alert("Invoice updated successfully");
+      window.location.reload();
+    } else {
+      alert("Failed to update invoice");
+    }
+  });
+
+  async function deleteInvoice(id) {
+    if (confirm("Are you sure you want to delete this invoice?")) {
+      const res = await fetch(`/api/invoice/delete/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (res.ok) {
+        alert("Invoice deleted successfully");
+        window.location.reload();
+      } else {
+        alert("Error deleting invoice");
+      }
+    }
+  }
+</script>
+</body>
+</html>
