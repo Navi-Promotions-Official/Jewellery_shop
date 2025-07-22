@@ -66,8 +66,8 @@ app.get('/goldestimation', (req, res) => {
   res.render('goldestimation');
 });
 
-app.get('/silverestimation', (req, res) => {
-  res.render('silverestimation');
+app.get('/silverEstimation', (req, res) => {
+  res.render('silverEstimation');
 });
 
 app.get('/dashboard', (req, res) => {
