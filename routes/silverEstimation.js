@@ -1,18 +1,23 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const SilverEstimation = require('../models/SilverEstimation');
+const SilverEstimation = require("../models/SilverEstimation");
 
-router.post('/save-estimation', async (req, res) => {
+router.post("/save-estimation", async (req, res) => {
   try {
+    const { name, phone, address, items } = req.body;
+
     const newEstimation = new SilverEstimation({
-      items: req.body.items
+      name,
+      phone,
+      address,
+      items
     });
 
     await newEstimation.save();
-    res.json({ message: 'Estimation saved successfully' });
-  } catch (error) {
-    console.error('Error saving estimation:', error);
-    res.status(500).json({ message: 'Error saving estimation', error });
+    res.status(201).json({ success: true, estimation: newEstimation });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to save estimation" });
   }
 });
 

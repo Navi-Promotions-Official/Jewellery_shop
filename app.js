@@ -35,7 +35,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use("/api/auth", authRoutes);
 app.use('/goldEstimation', goldEstimationRoutes);
-app.use('/silverEstimation', silverEstimationRoutes);
+app.use("/silverEstimation", silverEstimationRoutes);
 app.use('/api/customer', customerRoutes);
 app.use('/api/invoice', invoiceRoutes);
 app.use("/api/rates", rateRoutes);

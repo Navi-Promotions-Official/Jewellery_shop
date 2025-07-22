@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Silver Estimation</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="public/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
@@ -22,15 +21,15 @@
       <div class="row mb-3">
         <div class="col-md-4">
           <label class="form-label">Name:</label>
-          <input type="text" class="form-control" required>
+          <input type="text" class="form-control" id="estimationName" name="name" required>
         </div>
         <div class="col-md-4">
           <label class="form-label">Phone:</label>
-          <input type="text" class="form-control" required>
+          <input type="text" class="form-control" id="estimationPhone" name="phone" required>
         </div>
         <div class="col-md-4">
           <label class="form-label">Address:</label>
-          <input type="text" class="form-control">
+          <input type="text" class="form-control" id="estimationAddress" name="address">
         </div>
       </div>
 
@@ -51,12 +50,12 @@
             <!-- Item rows go here -->
           </tbody>
         </table>
-        <button type="button" class="btn btn-sm btn-outline-warning" onclick="addSilverItem()">+ Add Item</button>
+        <button type="button" class="btn btn-sm btn-outline-warning" onclick="addItem()">+ Add Item</button>
       </div>
 
-    <div class="text-end fw-bold fs-5">Grand Total: ₹ <span id="grandTotal">0.00</span></div>
+      <div class="text-end fw-bold fs-5">Grand Total: ₹ <span id="grandTotal">0.00</span></div>
+
       <div class="text-center mt-4">
-        <!-- Replace your Next button with this -->
         <button type="button" class="btn btn-warning text-white mt-4" onclick="submitEstimation()">Save Estimation</button>
         <button onclick="window.print()" class="btn btn-primary mt-4">Print</button>
       </div>
@@ -64,102 +63,104 @@
   </div>
 
 <script>
-  async function addSilverItem() {
-  const tableBody = document.querySelector('#itemsTable tbody');
+  async function addItem() {
+    const tableBody = document.querySelector('#itemsTable tbody');
+    if (!tableBody) return alert("Table not found!");
 
-  // Fetch silver rate from the backend
-  let silverRate = 0;
-  try {
-    const res = await fetch('/api/rates/silver');
-    const data = await res.json();
-    silverRate = parseFloat(data.rate) || 0;
-  } catch (err) {
-    console.error("Failed to fetch silver rate", err);
-    alert("Unable to load silver rate. Please check your connection.");
+    let silverRate = 0;
+    try {
+      const res = await fetch('/api/rates/silver');
+      const data = await res.json();
+      silverRate = parseFloat(data.rate) || 0;
+    } catch (err) {
+      console.error("Failed to fetch silver rate", err);
+      alert("Unable to load silver rate.");
+    }
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" class="form-control" name="type" value="Silver"></td>
+      <td><input type="text" class="form-control" name="item"></td>
+      <td><input type="number" class="form-control" name="weight" step="0.01" oninput="updateTotal(this)"></td>
+      <td><input type="number" class="form-control" name="count" value="1" oninput="updateTotal(this)"></td>
+      <td><input type="number" class="form-control" name="rate" value="${silverRate}" step="0.01" oninput="updateTotal(this)"></td>
+      <td><input type="text" class="form-control total" readonly value="0.00"></td>
+      <td>
+        <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
+          <i class="bi bi-trash-fill"></i>
+        </button>
+      </td>
+    `;
+    tableBody.appendChild(row);
   }
 
-  // Create new row for silver item
-  const row = document.createElement('tr');
-  row.innerHTML = `
-    <td><input type="text" class="form-control" name="type" value="Silver"></td>
-    <td><input type="text" class="form-control" name="item"></td>
-    <td><input type="number" class="form-control" name="weight" step="0.01" oninput="updateTotal(this)"></td>
-    <td><input type="number" class="form-control" name="count" oninput="updateTotal(this)" value="1"></td>
-    <td><input type="number" class="form-control" name="rate" value="${silverRate}" step="0.01" oninput="updateTotal(this)"></td>
-    <td><input type="text" class="form-control total" readonly value="0.00"></td>
-    <td>
-      <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
-        <i class="bi bi-trash-fill"></i>
-      </button>
-    </td>
-  `;
-  tableBody.appendChild(row);
-}
+  function updateTotal(input) {
+    const row = input.closest('tr');
+    const weight = parseFloat(row.querySelector('input[name="weight"]').value) || 0;
+    const count = parseInt(row.querySelector('input[name="count"]').value) || 1;
+    const rate = parseFloat(row.querySelector('input[name="rate"]').value) || 0;
+    const total = weight * count * rate;
+    row.querySelector('.total').value = total.toFixed(2);
+    updateGrandTotal();
+  }
 
+  function updateGrandTotal() {
+    let grandTotal = 0;
+    const totalInputs = document.querySelectorAll('.total');
+    totalInputs.forEach(input => {
+      grandTotal += parseFloat(input.value) || 0;
+    });
+    document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
+  }
 
-function updateTotal(input) {
-  const row = input.closest('tr');
-  const weight = parseFloat(row.querySelector('input[name="weight"]').value) || 0;
-  const count = parseInt(row.querySelector('input[name="count"]').value) || 1;
-  const rate = parseFloat(row.querySelector('input[name="rate"]').value) || 0;
+  function removeRow(button) {
+    button.closest('tr').remove();
+    updateGrandTotal();
+  }
 
-  const total = weight * count * rate;
-  row.querySelector('.total').value = total.toFixed(2);
+  function submitEstimation() {
+    const name = document.getElementById("estimationName").value.trim();
+    const phone = document.getElementById("estimationPhone").value.trim();
+    const address = document.getElementById("estimationAddress").value.trim();
 
-  updateGrandTotal(); // Update after each row total is updated
-}
+    if (!name || !phone) {
+      alert("Please enter name and phone number.");
+      return;
+    }
 
-function updateGrandTotal() {
-  let grandTotal = 0;
-  const totalInputs = document.querySelectorAll('.total');
+    const rows = document.querySelectorAll('#itemsTable tbody tr');
+    const items = [];
 
-  totalInputs.forEach(input => {
-    grandTotal += parseFloat(input.value) || 0;
-  });
+    rows.forEach(row => {
+      const item = {
+        type: row.querySelector('input[name="type"]').value,
+        item: row.querySelector('input[name="item"]').value,
+        weight: parseFloat(row.querySelector('input[name="weight"]').value) || 0,
+        count: parseInt(row.querySelector('input[name="count"]').value) || 1,
+        rate: parseFloat(row.querySelector('input[name="rate"]').value) || 0,
+        total: parseFloat(row.querySelector('.total').value) || 0
+      };
+      items.push(item);
+    });
 
-  // Update both the input display and the span
-  document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
-}
-
-function removeRow(button) {
-  button.closest('tr').remove();
-  updateGrandTotal();
-}
-
-  // Submit form to backend
-function submitEstimation() {
-  const rows = document.querySelectorAll('#itemsTable tbody tr');
-  const items = [];
-
-  rows.forEach(row => {
-    const item = {
-      type: row.querySelector('input[name="type"]').value,
-      item: row.querySelector('input[name="item"]').value,
-      weight: parseFloat(row.querySelector('input[name="weight"]').value) || 0,
-      count: parseInt(row.querySelector('input[name="count"]').value) || 1,
-      rate: parseFloat(row.querySelector('input[name="rate"]').value) || 0,
-      total: parseFloat(row.querySelector('.total').value) || 0
-    };
-    items.push(item);
-  });
-
-  fetch('/silverEstimation/save-estimation', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ items })
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert("Saved Successfully");
-    console.log(data);
-  })
-  .catch(err => {
-    alert("Error saving data");
-    console.error(err);
-  });
-}
+    fetch('/silverEstimation/save-estimation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, address, items })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Estimation saved successfully!");
+      } else {
+        alert("Failed to save estimation.");
+      }
+    })
+    .catch(err => {
+      alert("Server error");
+      console.error(err);
+    });
+  }
 </script>
 </body>
 </html>
