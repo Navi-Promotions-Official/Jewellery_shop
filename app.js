@@ -10,6 +10,7 @@ const customerRoutes = require('./routes/customer');
 const Customer = require('./models/Customer');
 const invoiceRoutes = require('./routes/invoice');
 const Invoice = require('./models/Invoice');
+const rateRoutes = require("./routes/rates");
 
 
 dotenv.config();
@@ -37,6 +38,8 @@ app.use('/goldEstimation', goldEstimationRoutes);
 app.use('/silverEstimation', silverEstimationRoutes);
 app.use('/api/customer', customerRoutes);
 app.use('/api/invoice', invoiceRoutes);
+app.use("/api/rates", rateRoutes);
+
 
 
 app.get('/customerdetails', async (req, res) => {

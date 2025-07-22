@@ -51,7 +51,7 @@
             <!-- Item rows go here -->
           </tbody>
         </table>
-        <button type="button" class="btn btn-sm btn-outline-warning" onclick="addItem()">+ Add Item</button>
+        <button type="button" class="btn btn-sm btn-outline-warning" onclick="addSilverItem()">+ Add Item</button>
       </div>
 
     <div class="text-end fw-bold fs-5">Grand Total: ₹ <span id="grandTotal">0.00</span></div>
@@ -64,23 +64,38 @@
   </div>
 
 <script>
-  function addItem() {
-    const tableBody = document.querySelector('#itemsTable tbody');
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" class="form-control" name="type"></td>
-      <td><input type="text" class="form-control" name="item"></td>
-      <td><input type="number" class="form-control" name="weight" step="0.01" oninput="updateTotal(this)"></td>
-      <td><input type="number" class="form-control" name="count" oninput="updateTotal(this)"></td>
-      <td><input type="number" class="form-control" name="rate" step="0.01" oninput="updateTotal(this)"></td>
-      <td><input type="text" class="form-control total" readonly value="0.00"></td>
-      <td>
-        <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
-          <i class="bi bi-trash-fill"></i>
-        </button>
-      </td>    `;
-    tableBody.appendChild(row);
+  async function addSilverItem() {
+  const tableBody = document.querySelector('#itemsTable tbody');
+
+  // Fetch silver rate from the backend
+  let silverRate = 0;
+  try {
+    const res = await fetch('/api/rates/silver');
+    const data = await res.json();
+    silverRate = parseFloat(data.rate) || 0;
+  } catch (err) {
+    console.error("Failed to fetch silver rate", err);
+    alert("Unable to load silver rate. Please check your connection.");
   }
+
+  // Create new row for silver item
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td><input type="text" class="form-control" name="type" value="Silver"></td>
+    <td><input type="text" class="form-control" name="item"></td>
+    <td><input type="number" class="form-control" name="weight" step="0.01" oninput="updateTotal(this)"></td>
+    <td><input type="number" class="form-control" name="count" oninput="updateTotal(this)" value="1"></td>
+    <td><input type="number" class="form-control" name="rate" value="${silverRate}" step="0.01" oninput="updateTotal(this)"></td>
+    <td><input type="text" class="form-control total" readonly value="0.00"></td>
+    <td>
+      <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
+        <i class="bi bi-trash-fill"></i>
+      </button>
+    </td>
+  `;
+  tableBody.appendChild(row);
+}
+
 
 function updateTotal(input) {
   const row = input.closest('tr');

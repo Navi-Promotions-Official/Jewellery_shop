@@ -82,7 +82,7 @@
           </form>
 
           <!-- Signup Form -->
-          <form id="signupForm" method="POST" action="api/auth/signup" style="display: none;">
+          <form id="signupForm" style="display: none;">
             <div class="mb-3">
               <label for="signupName" class="form-label">Full Name</label>
               <input type="text" class="form-control" id="signupName" name="name" required>
@@ -113,22 +113,43 @@
     <div class="col-md-5 mb-4">
       <div class="card text-center shadow-sm">
         <div class="card-body">
-          <h5 class="card-title fw-semibold">Gold Estimation Slip</h5>
-          <!-- <p id="goldRate" class="display-6 text-warning fw-bold">Loading...</p> -->
-          <a href="/goldestimation" class="btn btn-warning mt-3">
-            <i class="bi bi-coin me-1"></i> Estimate Gold
-          </a>
+  <h5 class="card-title fw-semibold">Gold Estimation Slip</h5>
 
-        </div>
+  <!-- Gold Rate Display -->
+  <p id="goldRateDisplay" class="h4 fw-bold text-warning">
+    ₹ <span id="goldRateValue">5850</span> / gram
+    <button class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#updateGoldRateModal" title="Update Rate">
+      <i class="bi bi-pencil-fill"></i>
+    </button>
+  </p>
+
+  <!-- Estimation Button -->
+  <a href="/goldestimation" class="btn btn-warning mt-3">
+    <i class="bi bi-coin me-1"></i> Estimate Gold
+  </a>
+</div>
+
       </div>
     </div>
     <div class="col-md-5 mb-4">
       <div class="card text-center shadow-sm">
         <div class="card-body">
-          <h5 class="card-title fw-semibold">Silver Estimation Slip</h5>
-          <!-- <p id="silverRate" class="display-6 text-secondary fw-bold">Loading...</p> -->
-          <a href="/silverestimation" class="btn btn-secondary mt-3"><i class="bi bi-coin me-1"></i> Estimate Silver</a>
-        </div>
+  <h5 class="card-title fw-semibold">Silver Estimation Slip</h5>
+
+  <!-- Silver Rate Display -->
+  <p id="silverRateDisplay" class="h4 fw-bold text-secondary">
+    ₹ <span id="silverRateValue">72.00</span> / gram
+    <button class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#updateSilverRateModal" title="Update Rate">
+      <i class="bi bi-pencil-fill"></i>
+    </button>
+  </p>
+
+  <!-- Estimation Button -->
+  <a href="/silverestimation" class="btn btn-secondary mt-3">
+    <i class="bi bi-coin me-1"></i> Estimate Silver
+  </a>
+</div>
+
       </div>
     </div>
   </div>
@@ -175,6 +196,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Create Customer Modal -->
 <div class="modal fade" id="createCustomerModal" tabindex="-1" aria-labelledby="createCustomerModalLabel" aria-hidden="true">
@@ -255,6 +277,46 @@
   </div>
 </div>
 
+<!-- Update Gold Rate Modal -->
+<div class="modal fade" id="updateGoldRateModal" tabindex="-1" aria-labelledby="updateGoldRateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="goldRateForm">
+      <div class="modal-header bg-warning text-white">
+        <h5 class="modal-title" id="updateGoldRateModalLabel">Update Gold Rate</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label for="newGoldRate" class="form-label">New Rate (₹ per gram)</label>
+        <input type="number" step="0.01" min="0" class="form-control" id="newGoldRate" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-warning">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Update Silver Rate Modal -->
+<div class="modal fade" id="updateSilverRateModal" tabindex="-1" aria-labelledby="updateSilverRateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="silverRateForm">
+      <div class="modal-header bg-secondary text-white">
+        <h5 class="modal-title" id="updateSilverRateModalLabel">Update Silver Rate</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label for="newSilverRate" class="form-label">New Rate (₹ per gram)</label>
+        <input type="number" step="0.01" min="0" class="form-control" id="newSilverRate" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-secondary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -288,6 +350,57 @@
     }
   });
 
+
+
+  document.getElementById("goldRateForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const newRate = document.getElementById("newGoldRate").value;
+
+    if (newRate && newRate > 0) {
+      try {
+        const response = await fetch('/api/rates/update-gold', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rate: parseFloat(newRate) })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Update display with confirmed rate from server
+          document.getElementById("goldRateValue").textContent = parseFloat(result.rate.rate).toFixed(2);
+
+          // Hide modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById('updateGoldRateModal'));
+          modal.hide();
+        } else {
+          alert("Failed to update rate. Try again.");
+        }
+
+      } catch (err) {
+        console.error("Error updating gold rate", err);
+        alert("Server error while updating rate.");
+      }
+    } else {
+      alert("Enter a valid gold rate.");
+    }
+  });
+
+  // Load current gold rate on page load
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const response = await fetch("/api/rates/gold");
+      const data = await response.json();
+      if (data.rate) {
+        document.getElementById("goldRateValue").textContent = parseFloat(data.rate).toFixed(2);
+      }
+    } catch (err) {
+      console.error("Failed to load gold rate");
+    }
+  });
+
+
   document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -316,6 +429,34 @@
       }
     } catch (err) {
       alert("Error during login. Try again.");
+    }
+  });
+
+  document.getElementById("signupForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); // Stop default browser behavior
+
+    const name = document.getElementById("signupName").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Signup successful! Please login.");
+        showLogin(); // ✅ Switch to login form
+      } else {
+        alert(result.message || "Signup failed.");
+      }
+    } catch (error) {
+      alert("Error during signup. Please try again.");
+      console.error(error);
     }
   });
 
@@ -457,6 +598,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+// Fetch and display silver rate
+(async function fetchSilverRate() {
+  const res = await fetch('/api/rates/silver');
+  if (res.ok) {
+    const data = await res.json();
+    document.getElementById('silverRateValue').textContent = parseFloat(data.rate).toFixed(2);
+  }
+})();
+
+// Update silver rate
+document.getElementById("silverRateForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const newRate = parseFloat(document.getElementById("newSilverRate").value);
+  const res = await fetch('/api/rates/silver', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rate: newRate })
+  });
+  if (res.ok) {
+    const data = await res.json();
+    document.getElementById('silverRateValue').textContent = parseFloat(data.rate).toFixed(2);
+    bootstrap.Modal.getInstance(document.getElementById('updateSilverRateModal')).hide();
+  } else {
+    alert('Error updating silver rate');
+  }
+});
 
 
 </script>

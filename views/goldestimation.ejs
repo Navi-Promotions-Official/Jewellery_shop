@@ -64,23 +64,39 @@
   </div>
 
 <script>
-  function addItem() {
-    const tableBody = document.querySelector('#itemsTable tbody');
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" class="form-control" name="type"></td>
-      <td><input type="text" class="form-control" name="item"></td>
-      <td><input type="number" class="form-control" name="weight" step="0.01" oninput="updateTotal(this)"></td>
-      <td><input type="number" class="form-control" name="count" oninput="updateTotal(this)"></td>
-      <td><input type="number" class="form-control" name="rate" step="0.01" oninput="updateTotal(this)"></td>
-      <td><input type="text" class="form-control total" readonly value="0.00"></td>
-      <td>
-        <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
-          <i class="bi bi-trash-fill"></i>
-        </button>
-      </td>    `;
-    tableBody.appendChild(row);
+  async function addItem() {
+  const tableBody = document.querySelector('#itemsTable tbody');
+
+  // Fetch gold rate from backend
+  let goldRate = 0;
+  try {
+    const res = await fetch('/api/rates/gold');
+    const data = await res.json();
+    goldRate = parseFloat(data.rate) || 0;
+  } catch (err) {
+    console.error("Failed to fetch gold rate", err);
+    alert("Unable to load gold rate. Please check your connection.");
   }
+
+  // Create new row with gold rate pre-filled
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td><input type="text" class="form-control" name="type" value="Gold"></td>
+    <td><input type="text" class="form-control" name="item"></td>
+    <td><input type="number" class="form-control" name="weight" step="0.01" oninput="updateTotal(this)"></td>
+    <td><input type="number" class="form-control" name="count" oninput="updateTotal(this)" value="1"></td>
+    <td><input type="number" class="form-control" name="rate" value="${goldRate}" step="0.01" oninput="updateTotal(this)"></td>
+    <td><input type="text" class="form-control total" readonly value="0.00"></td>
+    <td>
+      <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
+        <i class="bi bi-trash-fill"></i>
+      </button>
+    </td>
+  `;
+
+  tableBody.appendChild(row);
+}
+
 
 function updateTotal(input) {
   const row = input.closest('tr');
