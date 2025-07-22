@@ -33,6 +33,22 @@ router.get("/gold", async (req, res) => {
 });
 
 
+// POST: Update silver rate
+router.post("/update-silver", async (req, res) => {
+  const { rate } = req.body;
+  try {
+    const updatedRate = await Rate.findOneAndUpdate(
+      { metal: "silver" },
+      { rate, updatedAt: new Date() },
+      { upsert: true, new: true }
+    );
+    res.status(200).json({ success: true, rate: updatedRate });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to update silver rate" });
+  }
+});
+
 // GET: Fetch current silver rate
 router.get("/silver", async (req, res) => {
   try {
@@ -44,20 +60,5 @@ router.get("/silver", async (req, res) => {
   }
 });
 
-
-// POST Silver Rate (Update)
-router.post("/silver", async (req, res) => {
-  const { rate } = req.body;
-  try {
-    const updated = await SilverRate.findOneAndUpdate(
-      {},
-      { rate, updatedAt: new Date() },
-      { upsert: true, new: true }
-    );
-    res.json({ rate: updated.rate });
-  } catch (err) {
-    res.status(500).json({ message: "Error updating silver rate" });
-  }
-});
 
 module.exports = router;

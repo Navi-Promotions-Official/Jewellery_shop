@@ -137,17 +137,17 @@
   <h5 class="card-title fw-semibold">Silver Estimation Slip</h5>
 
   <!-- Silver Rate Display -->
-  <p id="silverRateDisplay" class="h4 fw-bold text-secondary">
-    ₹ <span id="silverRateValue">72.00</span> / gram
-    <button class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#updateSilverRateModal" title="Update Rate">
-      <i class="bi bi-pencil-fill"></i>
-    </button>
-  </p>
+ <p id="silverRateDisplay" class="h4 fw-bold text-secondary">
+  ₹ <span id="silverRateValue">750</span> / gram
+  <button class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#updateSilverRateModal" title="Update Rate">
+    <i class="bi bi-pencil-fill"></i>
+  </button>
+</p>
 
-  <!-- Estimation Button -->
-  <a href="/silverestimation" class="btn btn-secondary mt-3">
-    <i class="bi bi-coin me-1"></i> Estimate Silver
-  </a>
+<!-- Silver Estimation Button -->
+<a href="/silverestimation" class="btn btn-secondary mt-3">
+  <i class="bi bi-gem me-1"></i> Estimate Silver
+</a>
 </div>
 
       </div>
@@ -607,23 +607,52 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 })();
 
-// Update silver rate
-document.getElementById("silverRateForm").addEventListener("submit", async (e) => {
+// Submit silver rate update
+document.getElementById("silverRateForm").addEventListener("submit", async function (e) {
   e.preventDefault();
-  const newRate = parseFloat(document.getElementById("newSilverRate").value);
-  const res = await fetch('/api/rates/silver', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ rate: newRate })
-  });
-  if (res.ok) {
-    const data = await res.json();
-    document.getElementById('silverRateValue').textContent = parseFloat(data.rate).toFixed(2);
-    bootstrap.Modal.getInstance(document.getElementById('updateSilverRateModal')).hide();
+
+  const newRate = document.getElementById("newSilverRate").value;
+
+  if (newRate && newRate > 0) {
+    try {
+      const response = await fetch('/api/rates/update-silver', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rate: parseFloat(newRate) })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        document.getElementById("silverRateValue").textContent = parseFloat(result.rate.rate).toFixed(2);
+        const modal = bootstrap.Modal.getInstance(document.getElementById('updateSilverRateModal'));
+        modal.hide();
+      } else {
+        alert("Failed to update rate. Try again.");
+      }
+
+    } catch (err) {
+      console.error("Error updating silver rate", err);
+      alert("Server error while updating rate.");
+    }
   } else {
-    alert('Error updating silver rate');
+    alert("Enter a valid silver rate.");
   }
 });
+
+// Load current silver rate on page load
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch("/api/rates/silver");
+    const data = await response.json();
+    if (data.rate) {
+      document.getElementById("silverRateValue").textContent = parseFloat(data.rate).toFixed(2);
+    }
+  } catch (err) {
+    console.error("Failed to load silver rate");
+  }
+});
+
 
 
 </script>
