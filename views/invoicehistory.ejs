@@ -8,43 +8,120 @@
 </head>
 <body>
 
-<div class="container mt-5">
-  <h2 class="mb-4">Invoice History</h2>
+ <div class="container py-5">
+    <!-- Gold Estimations Table -->
+    <div class="card">
+      <div class="card-header">Gold Estimations</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Items</th>
+                <th>Date</th>
+                <!-- <th>Actions</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <% goldEstimates.forEach((est, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= est.name %></td>
+                  <td><%= est.phone %></td>
+                  <td><%= est.address %></td>
+                  <td>
+                    <ul>
+                      <% est.items.forEach(item => { %>
+                        <li>
+                          <strong>Type:</strong> <%= item.type %>,
+                          <strong>Item:</strong> <%= item.item %>,
+                          <strong>Weight:</strong> <%= item.weight %>g,
+                          <strong>Count:</strong> <%= item.count %>,
+                          <strong>Rate:</strong> ₹<%= item.rate %>,
+                          <strong>Total:</strong> ₹<%= item.total %>
+                        </li>
+                      <% }) %>
+                    </ul>
+                  </td>
+                  <td><%= est.createdAt.toISOString().substring(0, 10) %></td>
+                  <!-- <td>
+                    <a href="/edit/gold/<%= est._id %>" class="btn btn-sm btn-edit btn-action me-1">
+                      <i class="bi bi-pencil-fill"></i>
+                    </a>
+                    <form action="/delete/gold/<%= est._id %>" method="POST" style="display:inline;">
+                      <button type="submit" class="btn btn-sm btn-delete btn-action">
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    </form>
+                  </td> -->
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-  <table class="table table-bordered table-hover">
-    <thead class="table-light">
-      <tr>
-        <th>#</th>
-        <th>Invoice ID</th>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Email</th>
-        <th>Date</th>
-        <th>Amount (₹)</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% invoices.forEach((inv, index) => { %>
-        <tr>
-          <td><%= index + 1 %></td>
-          <td><%= inv.invoiceId %></td>
-          <td><%= inv.name %></td>
-          <td><%= inv.phone %></td>
-          <td><%= inv.email %></td>
-          <td><%= inv.date.toISOString().split('T')[0] %></td>
-          <td>₹<%= inv.amount.toFixed(2) %></td>
-          <td><%= inv.status %></td>
-          <td>
-            <button class="btn btn-sm btn-primary" onclick="editInvoice('<%= inv._id %>', '<%= inv.invoiceId %>', '<%= inv.name %>', '<%= inv.phone %>', '<%= inv.email %>', '<%= inv.date.toISOString().split('T')[0] %>' , '<%= inv.amount %>', '<%= inv.status %>')"><i class="bi bi-pencil-fill"></i></button>
-            <button class="btn btn-sm btn-danger" onclick="deleteInvoice('<%= inv._id %>')"><i class="bi bi-trash-fill"></i></button>
-          </td>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
-</div>
+    <!-- Silver Estimations Table -->
+    <div class="card">
+      <div class="card-header">Silver Estimations</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Items</th>
+                <th>Date</th>
+                <!-- <th>Actions</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <% silverEstimates.forEach((est, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= est.name %></td>
+                  <td><%= est.phone %></td>
+                  <td><%= est.address %></td>
+                  <td>
+                    <ul>
+                      <% est.items.forEach(item => { %>
+                        <li>
+                          <strong>Type:</strong> <%= item.type %>,
+                          <strong>Item:</strong> <%= item.item %>,
+                          <strong>Weight:</strong> <%= item.weight %>g,
+                          <strong>Count:</strong> <%= item.count %>,
+                          <strong>Rate:</strong> ₹<%= item.rate %>,
+                          <strong>Total:</strong> ₹<%= item.total %>
+                        </li>
+                      <% }) %>
+                    </ul>
+                  </td>
+                  <td><%= est.createdAt.toISOString().substring(0, 10) %></td>
+                  <!-- <td>
+  <button class="btn btn-sm btn-edit btn-action me-1" onclick="openEditModal('<%= est._id %>', '<%= est.name %>', '<%= est.phone %>', '<%= est.email %>')">
+    <i class="bi bi-pencil-fill"></i>
+  </button>
+  <button class="btn btn-sm btn-delete btn-action" onclick="deleteCustomer('<%= est._id %>')">
+    <i class="bi bi-trash-fill"></i>
+  </button>
+</td> -->
+
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <!-- Update Modal -->
 <div class="modal fade" id="editInvoiceModal" tabindex="-1" aria-labelledby="editInvoiceModalLabel" aria-hidden="true">

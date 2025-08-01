@@ -11,6 +11,9 @@ const Customer = require('./models/Customer');
 const invoiceRoutes = require('./routes/invoice');
 const Invoice = require('./models/Invoice');
 const rateRoutes = require("./routes/rates");
+const GoldEstimation = require('./models/GoldEstimation');
+const SilverEstimation = require('./models/SilverEstimation');
+
 
 
 dotenv.config();
@@ -40,25 +43,55 @@ app.use('/api/customer', customerRoutes);
 app.use('/api/invoice', invoiceRoutes);
 app.use("/api/rates", rateRoutes);
 
-
-
 app.get('/customerdetails', async (req, res) => {
   try {
-    const customers = await Customer.find().sort({ createdAt: -1 });
-    res.render('customerdetails', { customers });
+    const goldData = await GoldEstimation.find();
+    const silverData = await SilverEstimation.find();
+
+    res.render('customerdetails', {
+      goldEstimates: goldData,
+      silverEstimates: silverData
+    });
   } catch (err) {
-    res.send('Error loading customer details');
+    console.error(err);
+    res.status(500).send('Error fetching estimation data');
   }
 });
 
 app.get('/invoicehistory', async (req, res) => {
   try {
-    const invoices = await Invoice.find().sort({ createdAt: -1 });
-    res.render('invoicehistory', { invoices });
+    const goldData = await GoldEstimation.find();
+    const silverData = await SilverEstimation.find();
+
+    res.render('invoicehistory', {
+      goldEstimates: goldData,
+      silverEstimates: silverData
+    });
   } catch (err) {
-    res.send('Error loading invoice history');
+    console.error(err);
+    res.status(500).send('Error fetching estimation data');
   }
 });
+
+
+
+// app.get('/customerdetails', async (req, res) => {
+//   try {
+//     const customers = await Customer.find().sort({ createdAt: -1 });
+//     res.render('customerdetails', { customers });
+//   } catch (err) {
+//     res.send('Error loading customer details');
+//   }
+// });
+
+// app.get('/invoicehistory', async (req, res) => {
+//   try {
+//     const invoices = await Invoice.find().sort({ createdAt: -1 });
+//     res.render('invoicehistory', { invoices });
+//   } catch (err) {
+//     res.send('Error loading invoice history');
+//   }
+// });
 
 // Route for home page
 app.get("/", (req, res) => {

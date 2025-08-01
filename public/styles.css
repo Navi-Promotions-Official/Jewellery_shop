@@ -34,3 +34,33 @@
     border: none;
     background: transparent;
 }
+
+  @media print {
+    /* Hide buttons and inputs */
+    input, button, select, textarea {
+      display: none !important;
+    }
+
+    /* Optional: remove borders and background colors from table for clean output */
+    table, th, td {
+      border: 1px solid #000 !important;
+      background: none !important;
+    }
+
+    /* Optional: adjust layout spacing for printing */
+    body {
+      margin: 0;
+      padding: 20px;
+      color: #000;
+    }
+
+    /* Remove form layout but keep content */
+    #estimationForm {
+      display: block;
+    }
+
+    /* Adjust header alignment if needed */
+    .text-center, .text-end {
+      text-align: left !important;
+    }
+  }
